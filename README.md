@@ -1,0 +1,2 @@
+# symbolserver
+Simple Symbol Server
