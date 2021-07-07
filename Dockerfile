@@ -44,5 +44,6 @@ COPY --from=build-symbolpath /build/SymbolPath ./bin/SymbolPath
 
 # Copy the TypeScript Node app
 COPY --from=build /app/build ./build
+COPY backend/views /app
 EXPOSE 3000
 CMD ["pm2-runtime", "build/index.js"]
