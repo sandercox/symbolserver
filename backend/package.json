@@ -24,6 +24,7 @@
     "*.{js,css,md}": "prettier --write"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.11",
     "@types/express": "^4.17.12",
     "@types/express-fileupload": "^1.1.7",
     "@types/node": "^16.0.0",
@@ -33,6 +34,7 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",

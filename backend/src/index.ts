@@ -9,6 +9,8 @@ import { LoadSymbolModel, Symbol } from "./models/Symbol"
 import path from "path"
 import { Session } from "inspector";
 
+import cors from "cors";
+
 const port = process.env.PORT || 3000;
 const storageRoot = path.resolve(process.env.STORAGE_ROOT || "../storage");
 const sequelize = new Sequelize(process.env.DB_CONN || `sqlite:${storageRoot}/symbolstore.db`)
@@ -24,6 +26,7 @@ app.get("/", (req, res) => {
 app.use(urlencoded({ extended: true }));
 app.use(json({}));
 app.use(fileUpload());
+app.use(cors({ origin: "http://localhost:3000"}));
 app.set('view engine', 'ejs');
 
 const symbolLookup = async (filepath: string): Promise<string> => {
@@ -119,6 +122,15 @@ app.post("/symbol", async (req, res) => {
 
                     let symbolOk: boolean = false;
 
+                    const symbol = await Symbol.findOne({where: {path: storagePath.substring(storageRoot.length + 1)}})
+                    if(symbol)
+                    {
+                        console.error(`File is already in the database ${storagePath.substring(storageRoot.length + 1)}`);
+                        res.statusCode = 200;
+                        res.send("Already present");
+                        return;
+                    }
+
                     // retrieve debug symbol info
                     await symbolLookup(storagePath).then((symbol: string) => {
                         return Symbol.create({
@@ -150,7 +162,8 @@ app.post("/symbol", async (req, res) => {
 })
 
 app.get("/symbols", async (req, res) => {
-    res.send(await Symbol.findAll());
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(await Symbol.findAll()));
 })
 
 app.put("/link", async (req, res) => {
