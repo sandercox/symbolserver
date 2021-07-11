@@ -11,6 +11,25 @@ WORKDIR /build
 RUN cmake /src
 RUN cmake --build . --config Release
 
+## TypeScript build react
+FROM node:15-alpine AS build-react
+
+# update packages
+RUN apk update
+
+# create root application folder
+WORKDIR /app
+
+# Setup NPM packages
+COPY frontend/package*.json ./
+COPY frontend/tsconfig.json ./
+RUN npm install
+
+# Copy our source and build
+COPY frontend/src ./src
+COPY frontend/public ./public
+RUN npm run build
+
 ## TypeScript temporary image
 FROM node:15-alpine AS build
 
@@ -44,6 +63,7 @@ COPY --from=build-symbolpath /build/SymbolPath ./bin/SymbolPath
 
 # Copy the TypeScript Node app
 COPY --from=build /app/build ./build
+COPY --from=build-react /app/build ./public
 COPY backend/views /app/views
 EXPOSE 3000
 CMD ["pm2-runtime", "build/index.js"]
