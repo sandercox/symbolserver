@@ -21,6 +21,7 @@ app.use(json({}));
 app.use(cors({ origin: "http://localhost:3000" }));
 app.set("view engine", "ejs");
 app.use("/api", apiRoutes);
+app.use(express.static("public"));
 
 // Retrieve symbol from store
 app.get("/:file/:id/:file", async (req, res) => {
@@ -41,6 +42,10 @@ app.get("/:file/:id/:file", async (req, res) => {
     symbol.save();
     res.sendFile(storageRoot + "/" + symbol.path);
   });
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname+"/../public/index.html"));
 });
 
 const start = async () => {
