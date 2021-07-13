@@ -66,8 +66,8 @@ COPY --from=build /app/build ./build
 COPY --from=build-react /app/build ./public
 COPY backend/views /app/views
 
-ARG PORT=3000
-ARG NODE_ENV=production
+ENV PORT=3000
+ENV NODE_ENV=production
 
 EXPOSE 3000
 CMD ["pm2-runtime", "build/index.js"]
