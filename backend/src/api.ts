@@ -43,10 +43,8 @@ const router = express.Router();
 router.use(fileUpload());
 
 router.get("/", (req, res) => {
-    res.render('index');
+  res.render("index");
 });
-
-
 
 router.post("/symbol", async (req, res) => {
   if (req.files) {
@@ -60,7 +58,7 @@ router.post("/symbol", async (req, res) => {
         console.error("Failed to create directory", err);
       });
 
-      const extension = filename.substring(filename.indexOf(".", -1));
+      const extension = filename.substring(filename.lastIndexOf("."));
       const storagePath = storageDir + "/" + md5 + extension;
       fs.access(storagePath, fs.constants.F_OK, async (err) => {
         if (!err) {
@@ -101,18 +99,23 @@ router.post("/symbol", async (req, res) => {
           }
 
           // retrieve debug symbol info
+          let error: string = "";
           await symbolLookup(storagePath)
             .then((symbol: string) => {
               return Symbol.create({
                 id: symbol,
                 filename: filename,
                 path: storagePath.substring(storageRoot.length + 1)
-              }).then(() => {
-                symbolOk = true;
-              });
+              })
+                .then(() => {
+                  symbolOk = true;
+                })
+                .catch(() => {
+                  error = "Failed to store in database! Already present?";
+                });
             })
             .catch(() => {
-              console.error("SymbolLookup threw error!");
+              error = "SymbolLookup threw error!";
             });
 
           if (symbolOk) {
@@ -121,7 +124,8 @@ router.post("/symbol", async (req, res) => {
           } else {
             fs.rm(storagePath, (err) => {});
             res.statusCode = 400;
-            res.send("Invalid symbol file!");
+            if (error != "") res.send(error);
+            else res.send("Invalid symbol file!");
           }
           return;
         });
@@ -132,6 +136,20 @@ router.post("/symbol", async (req, res) => {
   res.statusCode = 400;
   res.send("Did not receive file");
   return;
+});
+
+router.delete("/symbol/:id", async (req, res) => {
+  const symbol = await Symbol.findOne({ where: { id: req.params.id } });
+  if(symbol)
+  {
+    await symbol.destroy();
+    res.send("Symbol removed");
+  }
+  else
+  {
+    res.statusCode = 404;
+    res.send("Symbol not found");
+  }
 });
 
 router.get("/symbols", async (req, res) => {
