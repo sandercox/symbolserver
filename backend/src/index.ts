@@ -8,7 +8,7 @@ import path from "path";
 import apiRoutes from "./api";
 import cors from "cors";
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 const storageRoot = path.resolve(process.env.STORAGE_ROOT || "../storage");
 const sequelize = new Sequelize(process.env.DB_CONN || `sqlite:${storageRoot}/symbolstore.db`);
 
@@ -18,10 +18,15 @@ const app = express();
 
 app.use(urlencoded({ extended: true }));
 app.use(json({}));
-app.use(cors({ origin: "http://localhost:3000" }));
+console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV !== "production") {
+  app.use(cors({ origin: "http://localhost:3000" }));
+}
 app.set("view engine", "ejs");
 app.use("/api", apiRoutes);
-app.use(express.static("public"));
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("public"));
+}
 
 // Retrieve symbol from store
 app.get("/:file/:id/:file", async (req, res) => {
@@ -45,7 +50,8 @@ app.get("/:file/:id/:file", async (req, res) => {
 });
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname+"/../public/index.html"));
+  if (process.env.NODE_ENV !== "production") res.redirect("http://localhost:3000/");
+  else res.sendFile(path.join(__dirname + "/../public/index.html"));
 });
 
 const start = async () => {
