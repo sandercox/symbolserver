@@ -39,6 +39,6 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "sequelize": "^6.6.4",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^5.0.3"
   }
 }
