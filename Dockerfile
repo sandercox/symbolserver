@@ -1,21 +1,17 @@
 ## Compile the SymbolPath tool
 FROM alpine:latest AS build-symbolpath
 
-RUN apk update && \
-    apk add build-base && \
-    apk add cmake
+RUN apk add --no-cache \
+        build-base \
+        cmake
 
 WORKDIR /src
 COPY symbolpath/ ./
-WORKDIR /build
-RUN cmake /src
-RUN cmake --build . --config Release
+RUN cmake -B /build -S .
+RUN cmake --build /build --config Release
 
 ## TypeScript build react
-FROM node:15-alpine AS build-react
-
-# update packages
-RUN apk update
+FROM node:18-alpine AS build-react
 
 # create root application folder
 WORKDIR /app
@@ -31,10 +27,7 @@ COPY frontend/public ./public
 RUN npm run build
 
 ## TypeScript temporary image
-FROM node:15-alpine AS build
-
-# update packages
-RUN apk update
+FROM node:18-alpine AS build
 
 # create root application folder
 WORKDIR /app
@@ -49,7 +42,7 @@ COPY backend/src ./src
 RUN npm run build
 
 ## Make production image
-FROM node:15-alpine
+FROM node:18-alpine
 WORKDIR /app
 COPY backend/package*.json ./
 RUN npm install --only=production

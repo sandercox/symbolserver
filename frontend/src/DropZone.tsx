@@ -1,8 +1,8 @@
 import { CSSProperties, FC, useMemo } from "react";
-import { useDropzone } from "react-dropzone";
+import { useDropzone, Accept } from "react-dropzone";
 
 export interface DropZoneProps {
-  accept?: string|string[];
+  accept?: Accept;
   style?: CSSProperties | undefined;
   activeStyle?: CSSProperties | undefined;
   acceptStyle?: CSSProperties | undefined;

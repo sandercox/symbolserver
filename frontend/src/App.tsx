@@ -1,9 +1,9 @@
 import React from "react";
 import "./App.css";
 
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import { Jumbotron, Navbar, Nav, Form, Button } from "react-bootstrap";
+import { Navbar, Nav, Form, Button } from "react-bootstrap";
 
 import { ShowSymbols } from "./ShowSymbols";
 import {UploadSymbols} from "./UploadSymbols";
@@ -20,25 +20,19 @@ function App() {
               <Nav.Link href="/add">Add</Nav.Link>
               <Nav.Link href="/docs">Docs</Nav.Link>
             </Nav>
-            <Form inline>
+            <Form className='d-flex'>
               <Form.Control type="text" placeholder="symbol name" className="mr-sm-2" />
               <Button variant="outline-success">Search</Button>
             </Form>
           </Navbar.Collapse>
         </Navbar>
-        <Jumbotron className="content">
-          <Switch>
-            <Route exact path="/">
-              <ShowSymbols />
-            </Route>
-            <Route path="/add">
-              <UploadSymbols />
-            </Route>
-            <Route path="/docs">
-              <div>docs</div>
-            </Route>
-          </Switch>
-        </Jumbotron >
+        <div className="jumbotron content">
+          <Routes>
+            <Route path="/" element={<ShowSymbols />} />
+            <Route path="add/*" element={<UploadSymbols />} />
+            <Route path="docs/*" element={<div>docs</div>} />
+          </Routes>
+      </div>
         <Navbar
           className="footer-nav justify-content-center"
           bg="dark"
@@ -47,7 +41,7 @@ function App() {
         >
           <Nav>
             <Nav.Link href="https://paralleldimension.nl/">
-              copyright (c) 2021 Parallel Dimension
+              copyright (c) 2023 Parallel Dimension
             </Nav.Link>
             <Nav.Link href="https://github.com/sandercox/symbolserver/">
               {process.env.REACT_APP_SHA || "SHA"}

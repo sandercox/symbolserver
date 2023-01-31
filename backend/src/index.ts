@@ -18,7 +18,6 @@ const app = express();
 
 app.use(urlencoded({ extended: true }));
 app.use(json({}));
-console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV !== "production") {
   app.use(cors({ origin: "http://localhost:3000" }));
 }
@@ -63,7 +62,7 @@ const start = async () => {
     console.error("Unable to connect to the database:", error);
   }
   app.listen(port, () => {
-    console.log("Started server");
+    console.log(`Started server on port ${port}`);
   });
 };
 
