@@ -26,5 +26,5 @@ class SymbolService {
 
     }
 }
-
-export default new SymbolService();
+const symbolService = new SymbolService();
+export default symbolService;

@@ -11,7 +11,7 @@ RUN cmake -B /build -S .
 RUN cmake --build /build --config Release
 
 ## TypeScript build react
-FROM node:18-alpine AS build-react
+FROM node:20-alpine AS build-react
 
 # create root application folder
 WORKDIR /app
@@ -27,7 +27,7 @@ COPY frontend/public ./public
 RUN npm run build
 
 ## TypeScript temporary image
-FROM node:18-alpine AS build
+FROM node:20-alpine AS build
 
 # create root application folder
 WORKDIR /app
@@ -42,9 +42,10 @@ COPY backend/src ./src
 RUN npm run build
 
 ## Make production image
-FROM node:18-alpine
+FROM node:20-alpine
 WORKDIR /app
 COPY backend/package*.json ./
+RUN apk update && apk --no-cache upgrade
 RUN npm install --only=production
 RUN npm install pm2 -g
 
